@@ -1,23 +1,47 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { createFileRoute, stripSearchParams, useNavigate } from "@tanstack/react-router";
 
-// The home route ships no og:image, so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
+import { BrowserSkeleton, ResourceBrowser } from "@/components/resources/ResourceBrowser";
+import { lookupsQuery, resourceListQuery } from "@/lib/resources/queries";
+import { cleanSearch, LIST_DEFAULTS, allSearchSchema, toFilters } from "@/lib/resources/search";
+import { pageHead } from "@/lib/seo";
+
 export const Route = createFileRoute("/")({
-  component: Index,
+  // Data comes from the browser-side mock API (localStorage), so render on the client.
+  ssr: false,
+  validateSearch: allSearchSchema,
+  // Keep URLs short: params equal to their default are dropped.
+  search: { middlewares: [stripSearchParams({ ...LIST_DEFAULTS, type: "all" })] },
+  // `view` is presentation only, so it doesn't trigger a reload.
+  loaderDeps: ({ search }) => toFilters(search, search.type),
+  loader: ({ context: { queryClient }, deps }) =>
+    Promise.all([
+      queryClient.ensureQueryData(resourceListQuery(deps)),
+      queryClient.ensureQueryData(lookupsQuery()),
+    ]),
+  head: () => pageHead("Library", "Every book, video and article on your shelf — searchable and filterable."),
+  pendingComponent: BrowserSkeleton,
+  component: LibraryPage,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+function LibraryPage() {
+  const search = Route.useSearch();
+  const navigate = useNavigate({ from: Route.fullPath });
+  const { data: results } = useSuspenseQuery(resourceListQuery(toFilters(search, search.type)));
+  const { data: lookups } = useSuspenseQuery(lookupsQuery());
+
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <ResourceBrowser
+      scope="all"
+      search={search}
+      results={results}
+      lookups={lookups}
+      onChange={(patch, options) =>
+        navigate({
+          search: (prev) => cleanSearch({ ...prev, ...patch }),
+          replace: options?.replace ?? false,
+        })
+      }
+    />
   );
 }

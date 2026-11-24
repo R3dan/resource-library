@@ -10,33 +10,128 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as NewRouteImport } from './routes/new'
+import { Route as ArticlesIndexRouteImport } from './routes/articles.index'
+import { Route as ArticlesIdRouteImport } from './routes/articles.$id'
+import { Route as BooksIndexRouteImport } from './routes/books.index'
+import { Route as BooksIdRouteImport } from './routes/books.$id'
+import { Route as VideosIndexRouteImport } from './routes/videos.index'
+import { Route as VideosIdRouteImport } from './routes/videos.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NewRoute = NewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArticlesIndexRoute = ArticlesIndexRouteImport.update({
+  id: '/articles/',
+  path: '/articles/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArticlesIdRoute = ArticlesIdRouteImport.update({
+  id: '/articles/$id',
+  path: '/articles/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BooksIndexRoute = BooksIndexRouteImport.update({
+  id: '/books/',
+  path: '/books/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BooksIdRoute = BooksIdRouteImport.update({
+  id: '/books/$id',
+  path: '/books/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VideosIndexRoute = VideosIndexRouteImport.update({
+  id: '/videos/',
+  path: '/videos/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VideosIdRoute = VideosIdRouteImport.update({
+  id: '/videos/$id',
+  path: '/videos/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/new': typeof NewRoute
+  '/articles/$id': typeof ArticlesIdRoute
+  '/books/$id': typeof BooksIdRoute
+  '/videos/$id': typeof VideosIdRoute
+  '/articles/': typeof ArticlesIndexRoute
+  '/books/': typeof BooksIndexRoute
+  '/videos/': typeof VideosIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/new': typeof NewRoute
+  '/articles/$id': typeof ArticlesIdRoute
+  '/books/$id': typeof BooksIdRoute
+  '/videos/$id': typeof VideosIdRoute
+  '/articles': typeof ArticlesIndexRoute
+  '/books': typeof BooksIndexRoute
+  '/videos': typeof VideosIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/new': typeof NewRoute
+  '/articles/$id': typeof ArticlesIdRoute
+  '/books/$id': typeof BooksIdRoute
+  '/videos/$id': typeof VideosIdRoute
+  '/articles/': typeof ArticlesIndexRoute
+  '/books/': typeof BooksIndexRoute
+  '/videos/': typeof VideosIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/new'
+    | '/articles/$id'
+    | '/books/$id'
+    | '/videos/$id'
+    | '/articles/'
+    | '/books/'
+    | '/videos/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/new'
+    | '/articles/$id'
+    | '/books/$id'
+    | '/videos/$id'
+    | '/articles'
+    | '/books'
+    | '/videos'
+  id:
+    | '__root__'
+    | '/'
+    | '/new'
+    | '/articles/$id'
+    | '/books/$id'
+    | '/videos/$id'
+    | '/articles/'
+    | '/books/'
+    | '/videos/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  NewRoute: typeof NewRoute
+  ArticlesIdRoute: typeof ArticlesIdRoute
+  BooksIdRoute: typeof BooksIdRoute
+  VideosIdRoute: typeof VideosIdRoute
+  ArticlesIndexRoute: typeof ArticlesIndexRoute
+  BooksIndexRoute: typeof BooksIndexRoute
+  VideosIndexRoute: typeof VideosIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +143,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/new': {
+      id: '/new'
+      path: '/new'
+      fullPath: '/new'
+      preLoaderRoute: typeof NewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/articles/': {
+      id: '/articles/'
+      path: '/articles'
+      fullPath: '/articles/'
+      preLoaderRoute: typeof ArticlesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/articles/$id': {
+      id: '/articles/$id'
+      path: '/articles/$id'
+      fullPath: '/articles/$id'
+      preLoaderRoute: typeof ArticlesIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/books/': {
+      id: '/books/'
+      path: '/books'
+      fullPath: '/books/'
+      preLoaderRoute: typeof BooksIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/books/$id': {
+      id: '/books/$id'
+      path: '/books/$id'
+      fullPath: '/books/$id'
+      preLoaderRoute: typeof BooksIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/videos/': {
+      id: '/videos/'
+      path: '/videos'
+      fullPath: '/videos/'
+      preLoaderRoute: typeof VideosIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/videos/$id': {
+      id: '/videos/$id'
+      path: '/videos/$id'
+      fullPath: '/videos/$id'
+      preLoaderRoute: typeof VideosIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  NewRoute: NewRoute,
+  ArticlesIdRoute: ArticlesIdRoute,
+  BooksIdRoute: BooksIdRoute,
+  VideosIdRoute: VideosIdRoute,
+  ArticlesIndexRoute: ArticlesIndexRoute,
+  BooksIndexRoute: BooksIndexRoute,
+  VideosIndexRoute: VideosIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

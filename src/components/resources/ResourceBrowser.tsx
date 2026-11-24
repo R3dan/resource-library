@@ -33,7 +33,8 @@ import { ResourceTable } from "./ResourceTable";
 export type BrowserPatch = Partial<BrowserSearch>;
 
 interface ResourceBrowserProps {
-  type: ResourceType | "all";
+  /** Which page this is: the whole library or one type's shelf. */
+  scope: ResourceType | "all";
   search: BrowserPatch & { view: ViewMode; sort: SortKey };
   results: Resource[];
   lookups: Lookups;
@@ -43,7 +44,7 @@ interface ResourceBrowserProps {
 const ANY = "__any";
 const ID_KEYS = ["author", "topic", "subtopic", "tag", "collection"] as const;
 
-export function ResourceBrowser({ type, search, results, lookups, onChange }: ResourceBrowserProps) {
+export function ResourceBrowser({ scope: type, search, results, lookups, onChange }: ResourceBrowserProps) {
   const facetKey = type === "all" ? null : TYPE_FACET[type];
   const subtopics = search.topic
     ? lookups.subtopics.filter((s) => s.topic_id === search.topic)
@@ -92,7 +93,7 @@ export function ResourceBrowser({ type, search, results, lookups, onChange }: Re
       <header className="flex flex-wrap items-end justify-between gap-6 border-b border-border pb-6">
         <div>
           <p className="eyebrow text-muted-foreground">
-            {type === "all" ? "The library" : "Collection"} · {results.length}{" "}
+            {type === "all" ? "The library" : "Shelf"} · {results.length}{" "}
             {results.length === 1 ? "item" : "items"}
           </p>
           <h1 className="mt-2 text-4xl font-medium sm:text-5xl">{title}</h1>

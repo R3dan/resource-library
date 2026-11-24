@@ -8,7 +8,10 @@ import { EMPTY_FILTERS } from "./filter";
  * default, so hand-edited URLs still render. Numbers typed into text params
  * (e.g. ?q=1984) are coerced back to strings.
  */
-const text = z.preprocess((v) => (typeof v === "number" ? String(v) : v), z.string()).catch("");
+const text = z
+  .preprocess((v) => (typeof v === "number" ? String(v) : v), z.string())
+  .catch("")
+  .default("");
 const id = z.number().int().positive().optional().catch(undefined);
 
 export const VIEW_MODES = ["cards", "list"] as const;
@@ -22,19 +25,21 @@ const base = {
   subtopic: id,
   tag: id,
   collection: id,
-  sort: z.enum(SORT_KEYS).catch("added"),
-  view: z.enum(VIEW_MODES).catch("cards"),
+  sort: z.enum(SORT_KEYS).catch("added").default("added"),
+  view: z.enum(VIEW_MODES).catch("cards").default("cards"),
 };
 
 export const allSearchSchema = z.object({
   ...base,
-  type: z.enum(["all", ...RESOURCE_TYPES]).catch("all"),
+  type: z.enum(["all", ...RESOURCE_TYPES]).catch("all").default("all"),
 });
 export const bookSearchSchema = z.object({ ...base, publisher: text });
 export const videoSearchSchema = z.object({ ...base, platform: text });
 export const articleSearchSchema = z.object({ ...base, publication: text });
 
-export const newSearchSchema = z.object({ type: z.enum(RESOURCE_TYPES).catch("book") });
+export const newSearchSchema = z.object({
+  type: z.enum(RESOURCE_TYPES).catch("book").default("book"),
+});
 
 /** Search state the shared browser UI reads/writes (superset of every list page). */
 export type BrowserSearch = z.infer<typeof allSearchSchema> & {
@@ -42,6 +47,14 @@ export type BrowserSearch = z.infer<typeof allSearchSchema> & {
   platform?: string;
   publication?: string;
 };
+
+/** Filters a link can preset on a type list page (e.g. from a detail page chip). */
+export type ListLinkSearch = Partial<
+  Pick<BrowserSearch, "author" | "topic" | "subtopic" | "tag" | "collection">
+>;
+
+/** Defaults shared by every list page; stripped from the URL by route middleware. */
+export const LIST_DEFAULTS = { q: "", status: "", sort: "added", view: "cards" } as const;
 
 /** Values equal to these are dropped from the URL to keep it short. */
 export const SEARCH_DEFAULTS = {
@@ -77,12 +90,12 @@ export function toFilters(
 }
 
 /** Drops empty and default-valued keys so URLs stay short and shareable. */
-export function cleanSearch(search: Record<string, unknown>): Record<string, unknown> {
+export function cleanSearch<T extends object>(search: T): T {
   const defaults: Record<string, unknown> = SEARCH_DEFAULTS;
   const out: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(search)) {
     if (value === undefined || value === "" || defaults[key] === value) continue;
     out[key] = value;
   }
-  return out;
+  return out as T;
 }

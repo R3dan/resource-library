@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 
 import { TYPE_META } from "@/lib/resources/meta";
 import { statusLabel, type ResourceType } from "@/lib/resources/schema";
+import type { ListLinkSearch } from "@/lib/resources/search";
 import { cn } from "@/lib/utils";
 
 /** Link to a resource's own page, routed by type. */
@@ -48,7 +49,7 @@ export function FilteredListLink({
   children,
 }: {
   type: ResourceType;
-  search: Record<string, string | number>;
+  search: ListLinkSearch;
   className?: string;
   children: ReactNode;
 }) {
